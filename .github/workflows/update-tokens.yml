@@ -1,25 +1,22 @@
-name: Generate design tokens # NOME DO WORKFLOW
+name: Generate design tokens
 
 on:
   repository_dispatch:
-    types: update-tokens  # NOME QUE O EVENTO DE DISPATCH DEVE TER PARA DISPARAR ESTE WORKFLOW(ESTE É O NOME ENVIADO PELO DESIGN TOKENS DO FIGMA)
-
+    types: update-tokens
 jobs:
   build:
-    runs-on: ubuntu-latest # SISTEMA UTILIZADO PARA RODAR O WORKFLOW
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3 # BUSCANDO CÓDIGO DO NOSSO REPOSITÓRIO
+      - uses: actions/checkout@v3
 
-			# CRIANDO ARQUIVO JSON DOS TOKENS ENVIADOS NO CORPO DA REQUISIÇÃO
       - name: Create input JSON
         id: create-json
         uses: jsdaniell/create-json@1.1.2
         with:
-          name: ${{ github.event.client_payload.filename }} # NOME QUE O ARQUIVO TERÁ (PODE DEIXAR ESTÁTICO SE QUISER)
-          json: ${{ github.event.client_payload.tokens }} # TOKENS RECEBIDOS 
-          dir: 'design-tokens' # PASTA ONDE SERÁ SALVO O ARQUIVO JSON DE TOKENS
+          name: ${{ github.event.client_payload.filename }}
+          json: ${{ github.event.client_payload.tokens }}
+          dir: 'design-tokens'
 
-			# INSTALANDO O NODE E AS DEPENDÊNCIAS DO PROJETO
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -28,17 +25,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-			# GERANDO A BUILD DO PROJETO (CONVERTENDO OS TOKENS DE JSON PARA OUTROS FORMATOS ESPECIFICADOS)
       - name: Build
         run: npm run build
 
-			# GERANDP PULL REQUEST DAS ALTERAÇÕES REALIZADAS
       - name: Create PR 
         uses: peter-evans/create-pull-request@v4
-        with:  # IMFORMAÇÕES DA PULL REQUEST
+        with:
           commit-message: "style: Update design tokens"
-          title: ${{ github.event.client_payload.commitMessage || 'Update design tokens' }} # ESTA MENSAGEM PODE VIR DO EVENTO DISPARADO PELO PLUGIN DESIGN TOKENS DO FIGMA
+          title: ${{ github.event.client_payload.commitMessage || 'Update design tokens' }}
           body: "Design tokens have been updated via Figma and need to be reviewed."
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # VARIÁVEL PADRÃO QUE JÁ TEM NO GITHUB
-          BRANCH_NAME: 'main' # NOME DA BRANCH ONDE SERÁ REALIZADO O PULL REQUEST
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: 'main'
