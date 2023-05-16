@@ -4,10 +4,14 @@ on:
   repository_dispatch:
     types: update-tokens
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out this repo
       - uses: actions/checkout@v3
 
       - name: Create input JSON
