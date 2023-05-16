@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out this repo
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
 
       - name: Create input JSON
         id: create-json
